@@ -158,3 +158,35 @@ const game = (function() {
 
     return {getActivePlayer, playRound}
 })();
+
+const displayController = (function() {
+    const renderBoard = () => {
+
+        // If UI cells have token text, then remove them
+        const cellNodes = document.querySelectorAll(".board > .cell");
+        if (cellNodes.item(0).hasChildNodes()) {
+            for (const cell of cellNodes) {
+                    const tokenText = cell.querySelector(".token-text");
+                    cell.removeChild(tokenText);            
+            }
+        }
+
+        // Get tokens and add to display
+        let cellCounter = 1;
+        gameboard.getBoard().forEach((row) => {
+            row.forEach((cell) => {
+                const token = cell.getToken();
+
+                const tokenElem = document.createElement("p");
+                tokenElem.classList.add("token-text");
+                tokenElem.textContent = token;
+
+                const targetCell = document.querySelector(`#cell-${cellCounter}`);
+                targetCell.appendChild(tokenElem);
+                cellCounter++;
+            })
+        });
+    }
+
+    return {renderBoard};
+})();
