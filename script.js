@@ -31,23 +31,7 @@ const gameboard = (function() {
         return true;
     }
 
-    // For console version
-    const printBoard = () => {
-        board.forEach((row) => {
-            let rowString = "";
-            for (let j = 0; j < 3; j++) {
-                if (row[j].getToken() === " ") {
-                    rowString += "_";
-                }
-                else {
-                    rowString += row[j].getToken();
-                }
-            }
-            console.log(rowString);
-        })
-    }
-
-    return {getBoard, selectCell, printBoard};
+    return {getBoard, selectCell};
 })();
 
 const makePlayer = function(name) {
@@ -83,12 +67,6 @@ const game = (function() {
         else {
             activePlayer = players.playerOne;
         }
-    }
-
-    // Console only
-    const printNewRound = () => {
-        gameboard.printBoard();
-        console.log(`It is ${getActivePlayer().getName()}'s turn:`)
     }
 
     const checkForWin = () => {
@@ -137,13 +115,16 @@ const game = (function() {
 
     const handleWin = () => {
         gameboard.printBoard();
+        // Update text-display to display winner
         console.log(`${getActivePlayer().getName()} wins!`);
+        // Remove event listener from board
+        // Add play again button to top wrapper
+        // Add edit name buttons to dom
     }
 
     const playRound = (row, column) => {
-        const cellSelected = gameboard.selectCell(row, column, getActivePlayer().getToken());
-        if (!cellSelected) {
-            printNewRound();
+        const selectedCell = gameboard.selectCell(row, column, getActivePlayer().getToken());
+        if (!selectedCell) {
             return;
         }
         
@@ -153,15 +134,61 @@ const game = (function() {
         }
 
         switchPlayerTurn();
-        printNewRound();
     }
 
     return {getActivePlayer, playRound}
 })();
 
 const displayController = (function() {
-    const renderBoard = () => {
+    const topWrapper = document.querySelector(".top-wrapper");
+    const textDisplay = document.querySelector(".text-display");
+    const boardDisplay = document.querySelector(".board");
 
+    topWrapper.addEventListener("click", handlePlayClick);
+
+    const handlePlayClick = (event) => {
+        if (event.target.classList.contains(".start-game")) {
+            handleStartGame();
+        }
+        else if (event.target.classList.contains(".play-again")) {
+            handlePlayAgain();
+        }
+    }
+
+    const handleStartGame = () => {
+        const startGameButton = document.querySelector(".start-game");
+        document.removeChild(startGameButton);
+
+        const editNameButtons = document.querySelectorAll(".edit-name-button");
+        editNameButtons.forEach((button) => document.removeChild(button));
+
+        displayActivePlayer();
+        
+        boardDisplay.addEventListener("click", handleBoardClick);
+    }
+
+    const handlePlayAgain = () => {
+
+    }
+
+    const handleBoardClick = (event) => {
+        const targetCell = event.target.closest(".cell");
+        if (targetCell) {
+            const row = targetCell.dataset.row;
+            const column = targetCell.dataset.column;
+
+            game.playRound(row, column);
+            
+            displayActivePlayer();
+            renderBoard();
+        }
+    }
+
+    const displayActivePlayer = () => {
+        textDisplay.textContent = `It is ${game.players.playerOne.getName()}'s turn. . .`;
+    }
+
+    const renderBoard = () => {
         // If UI cells have token text, then remove them
         const cellNodes = document.querySelectorAll(".board > .cell");
         if (cellNodes.item(0).hasChildNodes()) {
@@ -177,7 +204,7 @@ const displayController = (function() {
             row.forEach((cell) => {
                 const token = cell.getToken();
 
-                const tokenElem = document.createElement("p");
+                const tokenElem = document.createElement("div");
                 tokenElem.classList.add("token-text");
                 tokenElem.textContent = token;
 
