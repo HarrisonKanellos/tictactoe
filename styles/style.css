@@ -60,20 +60,20 @@ main {
 
 .board {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 130px);
+    grid-template-rows: repeat(3, 130px);
     gap: 15px;
 }
 
 .cell {
     background-color: black;
-    width: 130px;
-    height: 130px;
-    padding: 50px
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .token-text {
-    font-size: 50px;
+    font-size: 125px;
     color: whitesmoke;
 }
 
