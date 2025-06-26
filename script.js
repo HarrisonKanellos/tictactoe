@@ -114,9 +114,7 @@ const game = (function() {
     }
 
     const handleWin = () => {
-        gameboard.printBoard();
         // Update text-display to display winner
-        console.log(`${getActivePlayer().getName()} wins!`);
         // Remove event listener from board
         // Add play again button to top wrapper
         // Add edit name buttons to dom
@@ -178,7 +176,7 @@ const displayController = (function() {
             const column = targetCell.dataset.column;
 
             game.playRound(row, column);
-            
+
             displayActivePlayer();
             renderBoard();
         }
