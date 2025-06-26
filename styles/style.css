@@ -86,7 +86,15 @@ main {
 .player-one-wrapper,
 .player-two-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr 20px;
+    grid-template-columns: max-content 250px 20px;
+}
+
+.player-one-wrapper {
+    margin-bottom: 20px;
+}
+
+.player-name {
+    margin-left: 20px;
 }
 
 .edit-name-button {
