@@ -113,13 +113,6 @@ const game = (function() {
         return false;
     }
 
-    const handleWin = () => {
-        // Update text-display to display winner
-        // Remove event listener from board
-        // Add play again button to top wrapper
-        // Add edit name buttons to dom
-    }
-
     const playRound = (row, column) => {
         const selectedCell = gameboard.selectCell(row, column, getActivePlayer().getToken());
         if (!selectedCell) {
@@ -127,7 +120,7 @@ const game = (function() {
         }
         
         if (checkForWin()) {
-            handleWin();
+            displayController.displayWin();
             return;
         }
 
@@ -141,6 +134,8 @@ const displayController = (function() {
     const topWrapper = document.querySelector(".top-wrapper");
     const textDisplay = document.querySelector(".text-display");
     const boardDisplay = document.querySelector(".board");
+    const editNameButton1 = document.querySelector(".player-one-wrapper .edit-name-button");
+    const editNameButton2 = document.querySelector(".player-two-wrapper .edit-name-button");
 
     const handleBoardClick = (event) => {
         const targetCell = event.target.closest(".cell");
@@ -168,7 +163,12 @@ const displayController = (function() {
     }
 
     const handlePlayAgain = () => {
-
+        // Remove play again button
+        // Remove edit name buttons
+        // Switch player tokens
+        // Switch starting player
+        // Display active player
+        boardDisplay.addEventListener("click", handleBoardClick);
     }
 
     const handlePlayClick = (event) => {
@@ -184,6 +184,28 @@ const displayController = (function() {
 
     const displayActivePlayer = () => {
         textDisplay.textContent = `It is ${game.getActivePlayer().getName()}'s turn. . .`;
+    }
+
+    const addPlayAgainButton = () => {
+        const playAgainButton = document.createElement("button");
+        playAgainButton.setAttribute("type", "button");
+        playAgainButton.classList.add("play-again");
+        playAgainButton.textContent = "Play Again";
+        
+        topWrapper.insertBefore(playAgainButton, textDisplay);
+    }
+
+    const addEditNameButtons = () => {
+        document.querySelector(".player-one-wrapper").appendChild(editNameButton1);
+        document.querySelector(".player-two-wrapper").appendChild(editNameButton2);
+    }
+
+    const displayWin = () => {
+        textDisplay.textContent = `${game.getActivePlayer().getName()} is the Winner!`;
+        boardDisplay.removeEventListener("click", handleBoardClick);
+        addPlayAgainButton();
+        addEditNameButtons();
+        renderBoard();
     }
 
     const renderBoard = () => {
@@ -212,4 +234,6 @@ const displayController = (function() {
             })
         });
     }
+
+    return {displayWin}
 })();
