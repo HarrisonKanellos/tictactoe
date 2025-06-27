@@ -46,7 +46,7 @@ const makePlayer = function(name) {
     let token = null
 
     const getName = () => name;
-    const setName = (newName) => name;
+    const setName = (newName) => name = newName;
 
     const getToken = () => token;
     const assignToken = (newToken) => token = newToken;
@@ -68,6 +68,8 @@ const game = (function() {
     let activePlayer = startingPlayer;
 
     const getActivePlayer = () => activePlayer;
+
+    const getPlayers = () => players;
 
     const switchPlayerTurn = () => {
         if (activePlayer === players.playerOne) {
@@ -178,15 +180,21 @@ const game = (function() {
         gameboard.clearBoard();
     }
 
-    return {getActivePlayer, playRound, playAgain}
+    return {getPlayers, getActivePlayer, playRound, playAgain}
 })();
 
 const displayController = (function() {
     const topWrapper = document.querySelector(".top-wrapper");
     const textDisplay = document.querySelector(".text-display");
     const boardDisplay = document.querySelector(".board");
-    const editNameButton1 = document.querySelector(".player-one-wrapper .edit-name-button");
-    const editNameButton2 = document.querySelector(".player-two-wrapper .edit-name-button");
+    const bottomWrapper = document.querySelector(".bottom-wrapper");
+    const editNameButton1 = document.querySelector("#edit-player-one");
+    const editNameButton2 = document.querySelector("#edit-player-two");
+    const playerOneName = document.querySelector(".player-one-wrapper .player-name");
+    const playerTwoName = document.querySelector(".player-two-wrapper .player-name");
+
+    playerOneName.textContent = game.getPlayers().playerOne.getName();
+    playerTwoName.textContent = game.getPlayers().playerTwo.getName();
 
     const handleBoardClick = (event) => {
         const targetCell = event.target.closest(".cell");
@@ -247,9 +255,94 @@ const displayController = (function() {
 
     topWrapper.addEventListener("click", handlePlayClick);
 
-    const handleEditNameClick = (event) => {
+    const handleNameClick = (event) => {
+        const id = event.target.id;
+        if (id === "edit-player-one") {
+            const playerOneWrapper = document.querySelector(".player-one-wrapper");
+            
+            playerOneWrapper.removeChild(playerOneName);
+            playerOneWrapper.removeChild(editNameButton1);
 
+            const nameInput = document.createElement("input");
+            nameInput.setAttribute("type", "text");
+            nameInput.setAttribute("name", "player-one-name");
+            nameInput.setAttribute("id", "player-one-name");
+            nameInput.classList.add("name-input");
+            nameInput.value = game.getPlayers().playerOne.getName();
+
+            const saveButton = document.createElement("button");
+            saveButton.setAttribute("type", "button");
+            saveButton.classList.add("save-button");
+            saveButton.setAttribute("id", "save-player-one");
+
+            const label = playerOneWrapper.querySelector(".player-title");
+            label.setAttribute("for", "player-one-name")
+
+            playerOneWrapper.appendChild(nameInput);
+            playerOneWrapper.appendChild(saveButton);
+        }
+
+        else if (id === "edit-player-two") {
+            const playerTwoWrapper = document.querySelector(".player-two-wrapper");
+            
+            playerTwoWrapper.removeChild(playerTwoName);
+            playerTwoWrapper.removeChild(editNameButton2);
+
+            const nameInput = document.createElement("input");
+            nameInput.setAttribute("type", "text");
+            nameInput.setAttribute("name", "player-two-name");
+            nameInput.setAttribute("id", "player-two-name");
+            nameInput.classList.add("name-input");
+            nameInput.value = game.getPlayers().playerTwo.getName();
+
+            const saveButton = document.createElement("button");
+            saveButton.setAttribute("type", "button");
+            saveButton.classList.add("save-button");
+            saveButton.setAttribute("id", "save-player-two");
+
+            const label = playerTwoWrapper.querySelector(".player-title");
+            label.setAttribute("for", "player-two-name");
+
+            playerTwoWrapper.appendChild(nameInput);
+            playerTwoWrapper.appendChild(saveButton);
+        }
+
+        else if (id === "save-player-one") {
+            const playerOneWrapper = document.querySelector(".player-one-wrapper");
+            const nameInput = document.querySelector("#player-one-name");
+            const saveButton = playerOneWrapper.querySelector(".save-button");
+
+            const newName = nameInput.value;
+            game.getPlayers().playerOne.setName(newName);
+
+            playerOneWrapper.removeChild(nameInput);
+            playerOneWrapper.removeChild(saveButton);
+
+            playerOneName.textContent = newName;
+
+            playerOneWrapper.appendChild(playerOneName);
+            playerOneWrapper.appendChild(editNameButton1);
+        }
+
+        else if (id === "save-player-two") {
+            const playerTwoWrapper = document.querySelector(".player-two-wrapper");
+            const nameInput = document.querySelector("#player-two-name");
+            const saveButton = playerTwoWrapper.querySelector(".save-button");
+
+            const newName = nameInput.value;
+            game.getPlayers().playerTwo.setName(newName);
+
+            playerTwoWrapper.removeChild(nameInput);
+            playerTwoWrapper.removeChild(saveButton);
+
+            playerTwoName.textContent = newName;
+
+            playerTwoWrapper.appendChild(playerTwoName);
+            playerTwoWrapper.appendChild(editNameButton2);
+        }
     }
+
+    bottomWrapper.addEventListener("click", handleNameClick);
 
     const displayActivePlayer = () => {
         textDisplay.textContent = `${game.getActivePlayer().getName()}'s turn. . .`;
@@ -309,6 +402,4 @@ const displayController = (function() {
             })
         });
     }
-
-    return {displayWin}
 })();
