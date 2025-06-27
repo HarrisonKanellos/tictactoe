@@ -142,14 +142,29 @@ const game = (function() {
         return false;
     }
 
+    const checkForDraw = () => {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (gameboard.getBoard()[i][j].getToken() === " ") {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     const playRound = (row, column) => {
         const selectedCell = gameboard.selectCell(row, column, getActivePlayer().getToken());
         if (!selectedCell) {
             return;
         }
         
-        if (checkForWin()) {
+        else if (checkForWin()) {
             return "win";
+        }
+
+        else if (checkForDraw()) {
+            return "draw";
         }
 
         switchPlayerTurn();
@@ -177,8 +192,12 @@ const displayController = (function() {
             const row = targetCell.dataset.row;
             const column = targetCell.dataset.column;
 
-            if (game.playRound(row, column) === "win") {
+            const outcome = game.playRound(row, column);
+            if (outcome === "win") {
                 displayWin();
+            }
+            else if (outcome === "draw") {
+                displayDraw();
             }
             else {
                 displayActivePlayer();
@@ -246,6 +265,13 @@ const displayController = (function() {
 
     const displayWin = () => {
         textDisplay.textContent = `${game.getActivePlayer().getName()} is the Winner!`;
+        boardDisplay.removeEventListener("click", handleBoardClick);
+        addPlayAgainButton();
+        addEditNameButtons();
+    }
+
+    const displayDraw = () => {
+        textDisplay.textContent = "It is a draw.";
         boardDisplay.removeEventListener("click", handleBoardClick);
         addPlayAgainButton();
         addEditNameButtons();
