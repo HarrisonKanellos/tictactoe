@@ -142,33 +142,6 @@ const displayController = (function() {
     const textDisplay = document.querySelector(".text-display");
     const boardDisplay = document.querySelector(".board");
 
-    topWrapper.addEventListener("click", handlePlayClick);
-
-    const handlePlayClick = (event) => {
-        if (event.target.classList.contains(".start-game")) {
-            handleStartGame();
-        }
-        else if (event.target.classList.contains(".play-again")) {
-            handlePlayAgain();
-        }
-    }
-
-    const handleStartGame = () => {
-        const startGameButton = document.querySelector(".start-game");
-        document.removeChild(startGameButton);
-
-        const editNameButtons = document.querySelectorAll(".edit-name-button");
-        editNameButtons.forEach((button) => document.removeChild(button));
-
-        displayActivePlayer();
-        
-        boardDisplay.addEventListener("click", handleBoardClick);
-    }
-
-    const handlePlayAgain = () => {
-
-    }
-
     const handleBoardClick = (event) => {
         const targetCell = event.target.closest(".cell");
         if (targetCell) {
@@ -182,8 +155,35 @@ const displayController = (function() {
         }
     }
 
+    const handleStartGame = () => {
+        const startGameButton = document.querySelector(".start-game");
+        topWrapper.removeChild(startGameButton);
+
+        const editNameButtons = document.querySelectorAll(".edit-name-button");
+        editNameButtons.forEach((button) => button.remove());
+
+        displayActivePlayer();
+        
+        boardDisplay.addEventListener("click", handleBoardClick);
+    }
+
+    const handlePlayAgain = () => {
+
+    }
+
+    const handlePlayClick = (event) => {
+        if (event.target.classList.contains("start-game")) {
+            handleStartGame();
+        }
+        else if (event.target.classList.contains("play-again")) {
+            handlePlayAgain();
+        }
+    }
+
+    topWrapper.addEventListener("click", handlePlayClick);
+
     const displayActivePlayer = () => {
-        textDisplay.textContent = `It is ${game.players.playerOne.getName()}'s turn. . .`;
+        textDisplay.textContent = `It is ${game.getActivePlayer().getName()}'s turn. . .`;
     }
 
     const renderBoard = () => {
@@ -212,6 +212,4 @@ const displayController = (function() {
             })
         });
     }
-
-    return {renderBoard};
 })();
