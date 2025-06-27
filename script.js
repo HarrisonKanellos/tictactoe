@@ -31,7 +31,15 @@ const gameboard = (function() {
         return true;
     }
 
-    return {getBoard, selectCell};
+    const clearBoard = () => {
+        board.forEach((row) => {
+            row.forEach((cell) => {
+                cell.setToken(" ");
+            })
+        })
+    }
+
+    return {getBoard, selectCell, clearBoard};
 })();
 
 const makePlayer = function(name) {
@@ -53,10 +61,11 @@ const game = (function() {
     };
 
     // Give players tokens
-    players.playerOne.assignToken("x");
-    players.playerTwo.assignToken("o");
+    players.playerOne.assignToken("X");
+    players.playerTwo.assignToken("O");
 
-    let activePlayer = players.playerOne;
+    let startingPlayer = players.playerOne;
+    let activePlayer = startingPlayer;
 
     const getActivePlayer = () => activePlayer;
 
@@ -69,6 +78,26 @@ const game = (function() {
         }
     }
 
+    const switchPlayerTokens = () => {
+        if (players.playerOne.getToken() === "X") {
+            players.playerOne.assignToken("O");
+            players.playerTwo.assignToken("X");
+        }
+        else {
+            players.playerOne.assignToken("X");
+            players.playerTwo.assignToken("O");
+        }
+    }
+
+    const switchStartingPlayer = () => {
+        if (startingPlayer === players.playerOne) {
+            startingPlayer = players.playerTwo;
+        }
+        else {
+            startingPlayer = players.playerOne;
+        }
+    }
+
     const checkForWin = () => {
         // Check rows
         for (let i = 0; i < 3; i++) {
@@ -76,7 +105,7 @@ const game = (function() {
             for (let j = 0; j < 3; j++) {
                 rowString += gameboard.getBoard()[i][j].getToken();
             }
-            if (rowString === "xxx" || rowString === "ooo") {
+            if (rowString === "XXX" || rowString === "OOO") {
                 return true;
             }
         }
@@ -87,7 +116,7 @@ const game = (function() {
             for (let i = 0; i < 3; i++) {
                 columnString += gameboard.getBoard()[i][j].getToken();
             }
-            if (columnString === "xxx" || columnString === "ooo") {
+            if (columnString === "XXX" || columnString === "OOO") {
                 return true;
             }
         }
@@ -97,7 +126,7 @@ const game = (function() {
         for (let i = 0, j = 0; i < 3; i++, j++) {
             firstDiagonalString += gameboard.getBoard()[i][j].getToken();
         }
-        if (firstDiagonalString === "xxx" || firstDiagonalString === "ooo") {
+        if (firstDiagonalString === "XXX" || firstDiagonalString === "OOO") {
             return true;
         }
 
@@ -105,7 +134,7 @@ const game = (function() {
         for (let i = 2, j = 0; i >= 0; i--, j++) {
             secondDiagonalString += gameboard.getBoard()[i][j].getToken();
         }
-        if (secondDiagonalString === "xxx" || secondDiagonalString === "ooo") {
+        if (secondDiagonalString === "XXX" || secondDiagonalString === "OOO") {
             return true;
         }
 
@@ -120,14 +149,19 @@ const game = (function() {
         }
         
         if (checkForWin()) {
-            displayController.displayWin();
-            return;
+            return "win";
         }
 
         switchPlayerTurn();
     }
 
-    return {getActivePlayer, playRound}
+    const playAgain = () => {
+        switchPlayerTokens();
+        switchStartingPlayer();
+        gameboard.clearBoard();
+    }
+
+    return {getActivePlayer, playRound, playAgain}
 })();
 
 const displayController = (function() {
@@ -143,9 +177,13 @@ const displayController = (function() {
             const row = targetCell.dataset.row;
             const column = targetCell.dataset.column;
 
-            game.playRound(row, column);
+            if (game.playRound(row, column) === "win") {
+                displayWin();
+            }
+            else {
+                displayActivePlayer();
+            }
 
-            displayActivePlayer();
             renderBoard();
         }
     }
@@ -163,11 +201,17 @@ const displayController = (function() {
     }
 
     const handlePlayAgain = () => {
-        // Remove play again button
-        // Remove edit name buttons
-        // Switch player tokens
-        // Switch starting player
-        // Display active player
+        const playAgainButton = document.querySelector(".play-again");
+        topWrapper.removeChild(playAgainButton);
+
+        const editNameButtons = document.querySelectorAll(".edit-name-button");
+        editNameButtons.forEach((button) => button.remove());
+
+        game.playAgain();
+
+        displayActivePlayer();
+        renderBoard();
+
         boardDisplay.addEventListener("click", handleBoardClick);
     }
 
@@ -205,7 +249,6 @@ const displayController = (function() {
         boardDisplay.removeEventListener("click", handleBoardClick);
         addPlayAgainButton();
         addEditNameButtons();
-        renderBoard();
     }
 
     const renderBoard = () => {
