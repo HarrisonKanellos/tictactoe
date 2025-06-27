@@ -90,11 +90,13 @@ const game = (function() {
     }
 
     const switchStartingPlayer = () => {
-        if (startingPlayer === players.playerOne) {
-            startingPlayer = players.playerTwo;
+        if (players.playerOne.getToken() === "X") {
+            startingPlayer = players.playerOne;
+            activePlayer = startingPlayer;
         }
         else {
-            startingPlayer = players.playerOne;
+            startingPlayer = players.playerTwo;
+            activePlayer = startingPlayer;
         }
     }
 
@@ -245,8 +247,12 @@ const displayController = (function() {
 
     topWrapper.addEventListener("click", handlePlayClick);
 
+    const handleEditNameClick = (event) => {
+
+    }
+
     const displayActivePlayer = () => {
-        textDisplay.textContent = `It is ${game.getActivePlayer().getName()}'s turn. . .`;
+        textDisplay.textContent = `${game.getActivePlayer().getName()}'s turn. . .`;
     }
 
     const addPlayAgainButton = () => {
