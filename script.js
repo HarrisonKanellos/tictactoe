@@ -256,8 +256,7 @@ const displayController = (function() {
     topWrapper.addEventListener("click", handlePlayClick);
 
     const handleNameClick = (event) => {
-        const id = event.target.id;
-        if (id === "edit-player-one") {
+        if (event.target.closest("#edit-player-one")) {
             const playerOneWrapper = document.querySelector(".player-one-wrapper");
             
             playerOneWrapper.removeChild(playerOneName);
@@ -275,14 +274,19 @@ const displayController = (function() {
             saveButton.classList.add("save-button");
             saveButton.setAttribute("id", "save-player-one");
 
+            const saveIcon = document.createElement("img");
+            saveIcon.setAttribute("src", "icons/tick-icon.svg");
+            saveIcon.setAttribute("alt", "save");
+
             const label = playerOneWrapper.querySelector(".player-title");
             label.setAttribute("for", "player-one-name")
 
+            saveButton.appendChild(saveIcon);
             playerOneWrapper.appendChild(nameInput);
             playerOneWrapper.appendChild(saveButton);
         }
 
-        else if (id === "edit-player-two") {
+        else if (event.target.closest("#edit-player-two")) {
             const playerTwoWrapper = document.querySelector(".player-two-wrapper");
             
             playerTwoWrapper.removeChild(playerTwoName);
@@ -300,14 +304,19 @@ const displayController = (function() {
             saveButton.classList.add("save-button");
             saveButton.setAttribute("id", "save-player-two");
 
+            const saveIcon = document.createElement("img");
+            saveIcon.setAttribute("src", "icons/tick-icon.svg");
+            saveIcon.setAttribute("alt", "save");
+
             const label = playerTwoWrapper.querySelector(".player-title");
             label.setAttribute("for", "player-two-name");
 
+            saveButton.appendChild(saveIcon);
             playerTwoWrapper.appendChild(nameInput);
             playerTwoWrapper.appendChild(saveButton);
         }
 
-        else if (id === "save-player-one") {
+        else if (event.target.closest("#save-player-one")) {
             const playerOneWrapper = document.querySelector(".player-one-wrapper");
             const nameInput = document.querySelector("#player-one-name");
             const saveButton = playerOneWrapper.querySelector(".save-button");
@@ -324,7 +333,7 @@ const displayController = (function() {
             playerOneWrapper.appendChild(editNameButton1);
         }
 
-        else if (id === "save-player-two") {
+        else if (event.target.closest("#save-player-two")) {
             const playerTwoWrapper = document.querySelector(".player-two-wrapper");
             const nameInput = document.querySelector("#player-two-name");
             const saveButton = playerTwoWrapper.querySelector(".save-button");

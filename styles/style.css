@@ -99,7 +99,19 @@ main {
     margin-left: 20px;
 }
 
-.edit-name-button {
+.name-input {
+    font-family:'Times New Roman', Times, serif;
+    font-size: 1rem;
+    font-weight: bold;
+    color: whitesmoke;
+    background-color: black;
+    padding: 0 15px;
+    border: 2px solid whitesmoke;
+    margin: 0 20px;
+}
+
+.edit-name-button,
+.save-button {
     background-color: black;
     width: 30px;
     height: 30px;
